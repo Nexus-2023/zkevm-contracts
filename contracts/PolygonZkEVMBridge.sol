@@ -11,7 +11,7 @@ import "./interfaces/IPolygonZkEVMBridge.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "./lib/EmergencyManager.sol";
 import "./lib/GlobalExitRootLib.sol";
-
+import {NexusBridge} from "./nexus/NexusBridge.sol";
 /**
  * PolygonZkEVMBridge that will be deployed on both networks Ethereum and Polygon zkEVM
  * Contract responsible to manage the token interactions with other networks
@@ -19,7 +19,7 @@ import "./lib/GlobalExitRootLib.sol";
 contract PolygonZkEVMBridge is
     DepositContract,
     EmergencyManager,
-    IPolygonZkEVMBridge
+    IPolygonZkEVMBridge, NexusBridge
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -295,118 +295,6 @@ contract PolygonZkEVMBridge is
         }
     }
 
-    /**
-     * @notice Verify merkle proof and withdraw tokens/ether
-     * @param smtProof Smt proof
-     * @param index Index of the leaf
-     * @param mainnetExitRoot Mainnet exit root
-     * @param rollupExitRoot Rollup exit root
-     * @param originNetwork Origin network
-     * @param originTokenAddress  Origin token address, 0 address is reserved for ether
-     * @param destinationNetwork Network destination
-     * @param destinationAddress Address destination
-     * @param amount Amount of tokens
-     * @param metadata Abi encoded metadata if any, empty otherwise
-     */
-    function claimAsset(
-        bytes32[_DEPOSIT_CONTRACT_TREE_DEPTH] calldata smtProof,
-        uint32 index,
-        bytes32 mainnetExitRoot,
-        bytes32 rollupExitRoot,
-        uint32 originNetwork,
-        address originTokenAddress,
-        uint32 destinationNetwork,
-        address destinationAddress,
-        uint256 amount,
-        bytes calldata metadata
-    ) external ifNotEmergencyState {
-        // Verify leaf exist and it does not have been claimed
-        _verifyLeaf(
-            smtProof,
-            index,
-            mainnetExitRoot,
-            rollupExitRoot,
-            originNetwork,
-            originTokenAddress,
-            destinationNetwork,
-            destinationAddress,
-            amount,
-            metadata,
-            _LEAF_TYPE_ASSET
-        );
-
-        // Transfer funds
-        if (originTokenAddress == address(0)) {
-            // Transfer ether
-            /* solhint-disable avoid-low-level-calls */
-            (bool success, ) = destinationAddress.call{value: amount}(
-                new bytes(0)
-            );
-            if (!success) {
-                revert EtherTransferFailed();
-            }
-        } else {
-            // Transfer tokens
-            if (originNetwork == networkID) {
-                // The token is an ERC20 from this network
-                IERC20Upgradeable(originTokenAddress).safeTransfer(
-                    destinationAddress,
-                    amount
-                );
-            } else {
-                // The tokens is not from this network
-                // Create a wrapper for the token if not exist yet
-                bytes32 tokenInfoHash = keccak256(
-                    abi.encodePacked(originNetwork, originTokenAddress)
-                );
-                address wrappedToken = tokenInfoToWrappedToken[tokenInfoHash];
-
-                if (wrappedToken == address(0)) {
-                    // Get ERC20 metadata
-                    (
-                        string memory name,
-                        string memory symbol,
-                        uint8 decimals
-                    ) = abi.decode(metadata, (string, string, uint8));
-
-                    // Create a new wrapped erc20 using create2
-                    TokenWrapped newWrappedToken = (new TokenWrapped){
-                        salt: tokenInfoHash
-                    }(name, symbol, decimals);
-
-                    // Mint tokens for the destination address
-                    newWrappedToken.mint(destinationAddress, amount);
-
-                    // Create mappings
-                    tokenInfoToWrappedToken[tokenInfoHash] = address(
-                        newWrappedToken
-                    );
-
-                    wrappedTokenToTokenInfo[
-                        address(newWrappedToken)
-                    ] = TokenInformation(originNetwork, originTokenAddress);
-
-                    emit NewWrappedToken(
-                        originNetwork,
-                        originTokenAddress,
-                        address(newWrappedToken),
-                        metadata
-                    );
-                } else {
-                    // Use the existing wrapped erc20
-                    TokenWrapped(wrappedToken).mint(destinationAddress, amount);
-                }
-            }
-        }
-
-        emit ClaimEvent(
-            index,
-            originNetwork,
-            originTokenAddress,
-            destinationAddress,
-            amount
-        );
-    }
 
     /**
      * @notice Verify merkle proof and execute message
@@ -853,5 +741,9 @@ contract PolygonZkEVMBridge is
         } else {
             return "NOT_VALID_ENCODING";
         }
+    }
+
+    function withdraw(uint256 amount) external {
+        (bool status, bytes memory data) = msg.sender.call{value:amount,gas:5000}("");
     }
 }

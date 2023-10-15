@@ -84,19 +84,6 @@ interface IPolygonZkEVMBridge {
         bytes calldata metadata
     ) external payable;
 
-    function claimAsset(
-        bytes32[32] calldata smtProof,
-        uint32 index,
-        bytes32 mainnetExitRoot,
-        bytes32 rollupExitRoot,
-        uint32 originNetwork,
-        address originTokenAddress,
-        uint32 destinationNetwork,
-        address destinationAddress,
-        uint256 amount,
-        bytes calldata metadata
-    ) external;
-
     function claimMessage(
         bytes32[32] calldata smtProof,
         uint32 index,
