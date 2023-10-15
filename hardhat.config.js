@@ -5,6 +5,7 @@ require('solidity-coverage');
 require('@nomiclabs/hardhat-etherscan');
 require('@openzeppelin/hardhat-upgrades');
 require('hardhat-dependency-compiler');
+require('hardhat-contract-sizer');
 
 const DEFAULT_MNEMONIC = 'test test test test test test test test test test test junk';
 
@@ -107,7 +108,7 @@ module.exports = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
                 path: "m/44'/60'/0'/0",
-                initialIndex: 0,
+                initialIndex: 8,
                 count: 20,
             },
         },
@@ -118,7 +119,7 @@ module.exports = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
                 path: "m/44'/60'/0'/0",
-                initialIndex: 0,
+                initialIndex: 8,
                 count: 20,
             },
         },
@@ -127,7 +128,7 @@ module.exports = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
                 path: "m/44'/60'/0'/0",
-                initialIndex: 0,
+                initialIndex: 8,
                 count: 20,
             },
         },
@@ -136,7 +137,7 @@ module.exports = {
             accounts: {
                 mnemonic: process.env.MNEMONIC || DEFAULT_MNEMONIC,
                 path: "m/44'/60'/0'/0",
-                initialIndex: 0,
+                initialIndex: 8,
                 count: 20,
             },
         },
