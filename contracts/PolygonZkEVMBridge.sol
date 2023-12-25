@@ -11,7 +11,7 @@ import "./interfaces/IPolygonZkEVMBridge.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "./lib/EmergencyManager.sol";
 import "./lib/GlobalExitRootLib.sol";
-import {NexusBridge} from "./nexus/NexusBridge.sol";
+import {NexusBridgeDAO} from "./nexus/NexusBridgeDAO.sol";
 /**
  * PolygonZkEVMBridge that will be deployed on both networks Ethereum and Polygon zkEVM
  * Contract responsible to manage the token interactions with other networks
@@ -19,7 +19,7 @@ import {NexusBridge} from "./nexus/NexusBridge.sol";
 contract PolygonZkEVMBridge is
     DepositContract,
     EmergencyManager,
-    IPolygonZkEVMBridge, NexusBridge
+    IPolygonZkEVMBridge, NexusBridgeDAO
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -164,7 +164,7 @@ contract PolygonZkEVMBridge is
             if (msg.value != amount) {
                 revert AmountDoesNotMatchMsgValue();
             }
-
+            amountDeposited+=amount;
             // Ether is treated as ether from mainnet
             originNetwork = _MAINNET_NETWORK_ID;
         } else {
@@ -265,7 +265,7 @@ contract PolygonZkEVMBridge is
         ) {
             revert DestinationNetworkInvalid();
         }
-
+        amountDeposited+=msg.value;
         emit BridgeEvent(
             _LEAF_TYPE_MESSAGE,
             networkID,
@@ -288,7 +288,6 @@ contract PolygonZkEVMBridge is
                 keccak256(metadata)
             )
         );
-
         // Update the new root to the global exit root manager if set by the user
         if (forceUpdateGlobalExitRoot) {
             _updateGlobalExitRoot();
@@ -351,7 +350,7 @@ contract PolygonZkEVMBridge is
         if (!success) {
             revert MessageFailed();
         }
-
+        amountWithdrawn+=amount;
         emit ClaimEvent(
             index,
             originNetwork,
@@ -743,7 +742,5 @@ contract PolygonZkEVMBridge is
         }
     }
 
-    function withdraw(uint256 amount) external {
-        (bool status, bytes memory data) = msg.sender.call{value:amount,gas:5000}("");
-    }
+
 }
