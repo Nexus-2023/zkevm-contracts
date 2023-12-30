@@ -16,12 +16,10 @@ import {INexusBridge} from "./INexusBridge.sol";
  */
 abstract contract NexusBaseBridge is INexusBridge {
     address public override NEXUS_NETWORK = 0xd1C788Ac548Cb467b3c4B14CF1793BCa3c1dCBEB;
-    address public NEXUS_FEE_ADDRESS = 0x735bf02E4435dFADfE47a5FE5FBD42Ef375864A9;
     uint256 public amountDeposited;
     uint256 public amountWithdrawn;
     uint256 public slashedAmount;
     uint256 public validatorCount;
-    uint256 public NexusFeePercentage;
     // To be changed to the respective network addresses:
     address public constant DEPOSIT_CONTRACT = 0xff50ed3d0ec03aC01D4C79aAd74928BFF48a7b2b;
 
@@ -30,24 +28,17 @@ abstract contract NexusBaseBridge is INexusBridge {
     error NotNexus();
     error IncorrectWithdrawalCredentials();
     error StakingLimitExceeding();
-    error IncorrectNexusFee();
     error ValidatorNotExited();
     error WaitingForValidatorExits();
 
     event SlashingUpdated(uint256 amount);
     event NexusFeeChanged(uint256 _nexus_fee);
-    event NexusRewardsRedeemed(uint256 amount);
 
     modifier onlyNexus() {
         if (msg.sender != NEXUS_NETWORK) revert NotNexus();
         _;
     }
 
-    function setNexusFee(uint256 _nexus_fee) external override onlyNexus{
-        if(_nexus_fee>(BASIS_POINT)/10) revert IncorrectNexusFee();
-        NexusFeePercentage = _nexus_fee;
-        emit NexusFeeChanged(_nexus_fee);
-    }
 
     function depositValidatorNexus(
         INexusInterface.Validator[] calldata _validators,
