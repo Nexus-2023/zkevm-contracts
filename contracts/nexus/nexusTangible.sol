@@ -6,7 +6,7 @@ import {INexusBridge} from "./INexusBridge.sol";
 
 contract NexusBridgeDAO {
     address public constant NEXUS_NETWORK =
-        0xd1C788Ac548Cb467b3c4B14CF1793BCa3c1dCBEB;
+        0x7610dd2DE44aA3c03313b4c2812C482D86F3a9e7;
     address public constant NEXUS_FEE_ADDRESS =
         0x735bf02E4435dFADfE47a5FE5FBD42Ef375864A9;
 

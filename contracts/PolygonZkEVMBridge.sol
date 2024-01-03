@@ -71,7 +71,7 @@ contract PolygonZkEVMBridge is
 
     // Nexus Library Address
 
-    address public nexusLibrary;
+    address public constant nexusLibrary=0x0553a94bce5684A2697C677069a805199fC29b78;
 
     bytes32 public constant AMOUNT_DEPOSITED_SLOT =
         0xca4e9536f4b6163e8b3c485d13888b64170049f120695cca4a7920674f669123;
