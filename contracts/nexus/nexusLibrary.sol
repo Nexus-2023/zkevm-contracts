@@ -7,7 +7,7 @@ contract NexusLibrary {
 
     //holesky address
     address public constant NEXUS_NETWORK =
-        0x5746BA6697Dc136fb8986aC8a0E5F96E3859A8E0;
+        0xc0cb8f6c08AB23de6c2a73c49481FE112704F1b6;
     address public constant NEXUS_FEE_ADDRESS =
         0x735bf02E4435dFADfE47a5FE5FBD42Ef375864A9;
 
