@@ -5,7 +5,7 @@ const { ethers } = require('hardhat');
 async function main() {
     const Nexus = await ethers.getContractFactory('NexusLibrary');
     const nexus = await Nexus.deploy();
-    console.log('nexus library deployed to:', await nexus.getAddress());
+    console.log('nexus library deployed to:', nexus.address);
 }
 
 main().catch((e) => {
