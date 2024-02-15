@@ -40,7 +40,7 @@ contract NexusLibrary {
     error WaitingForValidatorExits();
     error NotDAO();
     error IncorrectAmountSent();
-    
+
     event RewardsRedeemed(uint256 amount);
     event SlashingUpdated(uint256 amount);
     event NexusFeeChanged(uint256 _nexus_fee);
@@ -128,7 +128,7 @@ contract NexusLibrary {
         emit SlashingUpdated(amount);
     }
 
-    function recieveExecutionRewards(uint256 amount) external override payable {
+    function recieveExecutionRewards(uint256 amount) external payable {
         if(amount!=msg.value) revert IncorrectAmountSent();
     }
 
