@@ -33,7 +33,6 @@ node -v
 
 =======
 ````
->>>>>>> Stashed changes
 The version of node should be: 18 (e.g. 18.19.0 )
 
 ## Download and prepare circom
@@ -51,7 +50,6 @@ git log --pretty=format:'%H' -n 1
 =======
 ````
 The hash of the commit should be: f0deda416abe91e5dd906c55507c737cd9986ab5
->>>>>>> Stashed changes
 
 The hash of the commit should be: f0deda416abe91e5dd906c55507c737cd9986ab5
 
@@ -71,7 +69,6 @@ circom --version
 =======
 ````
 The version of circom should be: 2.1.8
->>>>>>> Stashed changes
 
 The version of circom should be: 2.1.8
 
@@ -91,7 +88,6 @@ make -j bctree
 
 =======
 ````
->>>>>>> Stashed changes
 this step takes less than 1 minute.
 
 ## Prepare and launch setup (zkevm-proverjs)
@@ -120,20 +116,9 @@ cd contract
 npm init -y
 npm install hardhat
 mkdir -p contracts/verifiers
-<<<<<<< Updated upstream
-```
-
-To generate the same bycode it's important recover exactlly same options used during compilation, we found this information with contract information on etherscan (Settings).
-Copy this information inside the file ~/contract/settings.json, as follows:
-
-```bash
-cd ~/contract
-cat <<EOF >settings.json
-=======
 ````
 To generate the same bycode it's important recover exactlly same options used during compilation, we found this information with contract information on etherscan (Settings). For this smartcode compilation settings are:
 ```jsonld
->>>>>>> Stashed changes
 {
   "optimizer": {
     "enabled": true,
@@ -154,21 +139,6 @@ To generate the same bycode it's important recover exactlly same options used du
   },
   "libraries": {}
 }
-<<<<<<< Updated upstream
-EOF
-```
-
-After that, execute the following commands.
-
-```bash
-cd ~/contract
-echo -e "module.exports={solidity:{compilers:[{version: \"0.8.20\",settings:$(cat settings.json)}]}}" > hardhat.config.js
-```
-
-Once the project structure is created, we proceed to copy the smart contract generated in the previous step. This smart contract was saved on _~/zkevm-proverjs/build/proof_, and must be copied to _contracts/verifiers_ with exactly the name _Verifier.sol_. If the name or the path changes, the hash of metadata changes too, for this reason, is essential to respect the name and the path. To do it could execute these commands
-
-```bash
-=======
 ```
 Copy this information inside the file ~/contract/settings.json. To do it, use the editor as nano or vi. After that, execute the following commands.
 ````bash
@@ -184,32 +154,13 @@ sha256sum contracts/verifiers/FflonkVerifier.sol
 ```
 
 The result should be:
-<<<<<<< Updated upstream
-
-```
-8ae7baadd9f2ffb07862b0a74c20e1ad1cc2d4136e416ce5beac82a4e9a44923
-```
-
-=======
 ````
 8ae7baadd9f2ffb07862b0a74c20e1ad1cc2d4136e416ce5beac82a4e9a44923
 ````
->>>>>>> Stashed changes
 To compile smartcontract execute following command:
 
 ```bash
 npx hardhat compile
-<<<<<<< Updated upstream
-```
-
-> NOTE: During compilation warning is shown:
-> Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
-> --> contracts/verifiers/FflonkVerifier.sol:162:26:
-
-Bytecode of smartcontract was on bytecode property of json file _FflonkVerifier_ generated on path _artifacts/contracts/verifiers/FflonkVerifier.sol/_
-
-```
-=======
 ````
 > NOTE: During compilation warning is shown:
 > Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
@@ -217,7 +168,6 @@ Bytecode of smartcontract was on bytecode property of json file _FflonkVerifier_
 
 Bytecode of smartcontract was on bytecode property of json file *Verifier.json* generated on path *artifacts/contracts/verifiers/FflonkVerifier.sol*
 ````
->>>>>>> Stashed changes
 608060405234801561000f575f80fd5b506159c7
 806200001e5f395ff3fe60806040523480156100
 0f575f80fd5b5060043610610029575f3560e01c
@@ -240,9 +190,6 @@ Bytecode of smartcontract was on bytecode property of json file *Verifier.json* 
 a2646970667358221220761b1f07d5034592f204
 cb3439dbfabc28fb771c6e1bc6c8016e3d7b42ad
 5a2164736f6c63430008140033
-<<<<<<< Updated upstream
-```
-=======
 ````
 To extract bytecode on file in one line. If you prefer do it , you cold copy and paste in a file.
 ````bash
@@ -254,7 +201,6 @@ grep bytecode artifacts/contracts/verifiers/FflonkVerifier.sol/FflonkVerifier.js
 > NOTE: to see bytecode divided by lines could use following commands.
 > sed "s/^0x//;s/\([0-9a-f]\{40\}\)/\1\n/g" ~/contract/FflonkVerifier.sol.compiled.bytecode | head
 > sed "s/^0x//;s/\([0-9a-f]\{40\}\)/\1\n/g" ~/contract/FflonkVerifier.sol.compiled.bytecode | tail
->>>>>>> Stashed changes
 
 Verify bytecode compiled:
 
@@ -264,41 +210,13 @@ cat ./artifacts/contracts/verifiers/FflonkVerifier.sol/FflonkVerifier.json | jq 
 ```
 
 The result should be:
-<<<<<<< Updated upstream
-
-```
-34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703
-```
-
-## Download bytecode of deployed smartcontract
-
-To download bytecode of deployed smartcontract, need the address of smart contract, in this case it's _0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8_.
-
-### Download by copying data manually
-
-Go to Etherscan or Beaconcha to get transaction bytecode.
-
-Associated with address _0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8_ found the transacction _0x2f0ce26dd454211f84df373e7b37be2d683cb71532bc6d0ec63d6fcdbaa4c5e3_.
-
--   ### Etherscan (https://etherscan.io)
-
-        https://etherscan.io/address/0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8
-        https://etherscan.io/tx/0x2f0ce26dd454211f84df373e7b37be2d683cb71532bc6d0ec63d6fcdbaa4c5e3
-
-    Click to see more > Input Data > Select all data and copy to clipboard.
-
--   ### Beacocha (https://beaconcha.in)
-        https://beaconcha.in/address/0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8
-        https://beaconcha.in/tx/0x2f0ce26dd454211f84df373e7b37be2d683cb71532bc6d0ec63d6fcdbaa4c5e3
-    Advanced Info > Call Data > Select all data and copy to clipboard.
-=======
 ````
 34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703
 ````
 
 ## Download bytecode of deployed smartcontract
 
-To download bytecode of deployed smartcontract, need the address of smart contract, in this case it's *0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8*. Go to Etherscan or Beaconcha to get transaction bytecode.  
+To download bytecode of deployed smartcontract, need the address of smart contract, in this case it's *0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8*. Go to Etherscan or Beaconcha to get transaction bytecode.
 
 Associated with address *0x1C3A3da552b8662CD69538356b1E7c2E9CC1EBD8* found the transacction *0x2f0ce26dd454211f84df373e7b37be2d683cb71532bc6d0ec63d6fcdbaa4c5e3*.
 
@@ -351,13 +269,6 @@ sha256sum FflonkVerifier.sol.*.bytecode
 ```
 
 The result should be:
-<<<<<<< Updated upstream
-
-```
-34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703  FflonkVerifier.sol.compiled.bytecode
-34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703  FflonkVerifier.sol.explorer.bytecode
-```
-=======
 ````
 34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703  FflonkVerifier.sol.compiled.bytecode
 34c11f41d424eb821b42630183c4b97dc8689163276ca50095e5918202950703  FflonkVerifier.sol.explorer.bytecode

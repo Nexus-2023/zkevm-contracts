@@ -126,11 +126,7 @@ const config: HardhatUserConfig = {
                     evmVersion: "paris",
                 }, // try yul optimizer
             },
-<<<<<<< Updated upstream
-            "contracts/v2/newDeployments/PolygonRollupManagerNotUpgraded.sol": {
-=======
             "contracts/v2/mocks/PolygonRollupManagerMockInternalTest.sol": {
->>>>>>> Stashed changes
                 version: "0.8.20",
                 settings: {
                     optimizer: {

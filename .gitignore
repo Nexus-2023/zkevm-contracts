@@ -19,10 +19,7 @@ upgrade_parameters.json
 docker/gethData/
 *.ignore/
 typechain-types/
-<<<<<<< Updated upstream
 create_rollup_parameters.json
+deployment/deploy_parameters.json
 
-docker/deploymentOutput
-=======
-create_rollup_parameters.json
->>>>>>> Stashed changes
+deployment/genesis.json
