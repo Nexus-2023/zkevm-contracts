@@ -1,7 +1,10 @@
-import "dotenv/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "@openzeppelin/hardhat-upgrades";
-import "hardhat-dependency-compiler";
+require('dotenv').config();
+require('@nomiclabs/hardhat-waffle');
+require('hardhat-gas-reporter');
+require('solidity-coverage');
+require('@nomiclabs/hardhat-etherscan');
+require('@openzeppelin/hardhat-upgrades');
+require('hardhat-dependency-compiler');
 
 import {HardhatUserConfig} from "hardhat/config";
 
