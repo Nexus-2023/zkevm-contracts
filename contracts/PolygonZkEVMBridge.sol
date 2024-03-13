@@ -11,7 +11,6 @@ import "./interfaces/IPolygonZkEVMBridge.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "./lib/EmergencyManager.sol";
 import "./lib/GlobalExitRootLib.sol";
-import {NexusBridge} from "./nexus/NexusBridge.sol";
 /**
  * PolygonZkEVMBridge that will be deployed on both networks Ethereum and Polygon zkEVM
  * Contract responsible to manage the token interactions with other networks
@@ -19,7 +18,7 @@ import {NexusBridge} from "./nexus/NexusBridge.sol";
 contract PolygonZkEVMBridge is
     DepositContract,
     EmergencyManager,
-    IPolygonZkEVMBridge, NexusBridge
+    IPolygonZkEVMBridge
 {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
@@ -68,6 +67,14 @@ contract PolygonZkEVMBridge is
     // PolygonZkEVM address
     address public polygonZkEVMaddress;
 
+    // Nexus Library Address
+
+    address public constant nexusLibrary=0x3B2b92605c2e15069E50112160bC109E9e9161d4;
+
+    bytes32 public constant AMOUNT_DEPOSITED_SLOT =
+        0xca4e9536f4b6163e8b3c485d13888b64170049f120695cca4a7920674f669123;
+    bytes32 public constant AMOUNT_WITHDRAWN_SLOT =
+        0x0727682b75deaf0886514bd82c90f1c6e80521cdb4aeb9ed6f2ada2d5f20f112;
     /**
      * @param _networkID networkID
      * @param _globalExitRootManager global exit root manager address
@@ -130,8 +137,24 @@ contract PolygonZkEVMBridge is
         bytes metadata
     );
 
+
+    fallback() external {
+
+        (bool success, bytes memory data) = nexusLibrary.delegatecall(msg.data);
+        assembly {
+            switch success
+                // delegatecall returns 0 on error.
+                case 0 { revert(add(data, 32), returndatasize()) }
+                default { return(add(data, 32), returndatasize()) }
+        }
+    }
+
     /**
      * @notice Deposit add a new leaf to the merkle tree
+     * note If this function is called with a reentrant token, it would be possible to `claimTokens` in the same call
+     * Reducing the supply of tokens on this contract, and actually locking tokens in the contract.
+     * Therefore we recommend to third parties bridges that if they do implement reentrant call of `beforeTransfer` of some reentrant tokens
+     * do not call any external address in that case
      * @param destinationNetwork Network destination
      * @param destinationAddress Address destination
      * @param amount Amount of tokens
@@ -164,7 +187,9 @@ contract PolygonZkEVMBridge is
             if (msg.value != amount) {
                 revert AmountDoesNotMatchMsgValue();
             }
-
+            assembly {
+                sstore(AMOUNT_DEPOSITED_SLOT, add(sload(AMOUNT_DEPOSITED_SLOT), amount))
+            }
             // Ether is treated as ether from mainnet
             originNetwork = _MAINNET_NETWORK_ID;
         } else {
@@ -288,7 +313,11 @@ contract PolygonZkEVMBridge is
                 keccak256(metadata)
             )
         );
+        uint256 amount = msg.value;
 
+        assembly {
+            sstore(AMOUNT_DEPOSITED_SLOT, add(sload(AMOUNT_DEPOSITED_SLOT), amount))
+        }
         // Update the new root to the global exit root manager if set by the user
         if (forceUpdateGlobalExitRoot) {
             _updateGlobalExitRoot();
@@ -351,7 +380,9 @@ contract PolygonZkEVMBridge is
         if (!success) {
             revert MessageFailed();
         }
-
+        assembly {
+                sstore(AMOUNT_WITHDRAWN_SLOT, add(sload(AMOUNT_WITHDRAWN_SLOT), amount))
+        }
         emit ClaimEvent(
             index,
             originNetwork,
@@ -741,9 +772,5 @@ contract PolygonZkEVMBridge is
         } else {
             return "NOT_VALID_ENCODING";
         }
-    }
-
-    function withdraw(uint256 amount) external {
-        (bool status, bytes memory data) = msg.sender.call{value:amount,gas:5000}("");
     }
 }
